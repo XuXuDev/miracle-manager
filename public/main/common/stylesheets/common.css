@@ -1,0 +1,210 @@
+html,
+body {
+	font-size: 100px;
+	margin: 0px;
+	background-color: #FFFFFF;
+}
+
+.wx-mask {
+	filter: progid: DXImageTransform.Microsoft.gradient(startcolorstr=#7f000000, endcolorstr=#7f000000);
+	background-color: rgba(0, 0, 0, .5);
+	position: fixed;
+	z-index: 99998;
+	top: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.wx-mask-loading {
+	filter: progid: DXImageTransform.Microsoft.gradient(startcolorstr=#7f000000, endcolorstr=#7f000000);
+	background-color: rgba(0, 0, 0, .5);
+	position: fixed;
+	z-index: 99998;
+	top: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.wx-tip-window {
+	position: fixed;
+	z-index: 99999;
+	width: 76%;
+	left: 12%;
+	top: 40%;
+}
+
+.wx-tip-inner {
+	text-align: center;
+	background-color: #F2F2F2;
+	padding: 5px 10px;
+	border-radius: 10px 10px 0 0;
+}
+
+.wx-tip-title {
+	font-family: "微软雅黑";
+	font-size: 17px;
+	color: #1E1E1E;
+	font-weight: lighter;
+}
+
+.wx-tip-info {
+	font-family: "微软雅黑";
+	font-size: 15px;
+	color: #1E1E1E;
+}
+
+.wx-tip-button {
+	background-color: #FFFFFF;
+	border-radius: 0 0 10px 10px;
+	text-align: center;
+	position: relative;
+}
+
+.wx-tip-cancle {
+	font-family: "微软雅黑";
+	font-size: 15px;
+	color: #A0A0A0;
+	line-height: 50px;
+}
+
+.wx-tip-cancle-border {
+	width: 50%;
+	border-top: 1px solid #C8C8C8;
+	border-right: 1px solid #C8C8C8;
+}
+
+.wx-tip-confirm {
+	font-family: "微软雅黑";
+	font-size: 15px;
+	color: #FE7167;
+	line-height: 50px;
+}
+
+.wx-tip-confirm-border {
+	width: auto;
+	border-top: 1px solid #C8C8C8;
+}
+
+.wx-loading-window {
+	position: fixed;
+	z-index: 99999;
+	width: 30%;
+	left: 35%;
+	top: 40%;
+	text-align: center;
+	background-color: #F2F2F2;
+	padding: 5px 10px;
+	border-radius: 10px;
+}
+
+.wx-loading-div {
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	position: relative;
+	vertical-align: middle;
+}
+
+.wx-loading-tip {
+	font-family: "微软雅黑";
+	font-size: 14px;
+	color: #FE7167;
+	line-height: 30px;
+}
+
+.wx-loading-ears {
+	vertical-align: top;
+	width: 30px;
+	height: auto;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 99999;
+}
+
+.wx-loading-hand {
+	vertical-align: top;
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 99999;
+	animation-name: wxLoadingAnimation;
+	animation-duration: 1.2s;
+	animation-timing-function: linear;
+	animation-delay: 0s;
+	animation-iteration-count: infinite;
+	animation-direction: normal;
+	animation-play-state: running;
+	animation-fill-mode: forwards;
+	-moz-animation-name: wxLoadingAnimation;
+	-moz-animation-duration: 1.2s;
+	-moz-animation-timing-function: linear;
+	-moz-animation-delay: 0s;
+	-moz-animation-iteration-count: infinite;
+	-moz-animation-direction: normal;
+	-moz-animation-play-state: running;
+	-webkit-animation-name: wxLoadingAnimation;
+	-webkit-animation-duration: 1.2s;
+	-webkit-animation-timing-function: linear;
+	-webkit-animation-delay: 0s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-direction: normal;
+	-webkit-animation-play-state: running;
+	-o-animation-name: wxLoadingAnimation;
+	-o-animation-duration: 1.2s;
+	-o-animation-timing-function: linear;
+	-o-animation-delay: 0s;
+	-o-animation-iteration-count: infinite;
+	-o-animation-direction: normal;
+	-o-animation-play-state: running;
+}
+
+@keyframes wxLoadingAnimation {
+	0% {
+		transform: rotateZ(0deg);
+	}
+	50% {
+		transform: rotateZ(180deg);
+	}
+	100% {
+		transform: rotateZ(360deg);
+	}
+}
+
+@-moz-keyframes wxLoadingAnimation {
+	0% {
+		transform: rotateZ(0deg);
+	}
+	50% {
+		transform: rotateZ(180deg);
+	}
+	100% {
+		transform: rotateZ(360deg);
+	}
+}
+
+@-webkit-keyframes wxLoadingAnimation {
+	0% {
+		transform: rotateZ(0deg);
+	}
+	50% {
+		transform: rotateZ(180deg);
+	}
+	100% {
+		transform: rotateZ(360deg);
+	}
+}
+
+@-o-keyframes wxLoadingAnimation {
+	0% {
+		transform: rotateZ(0deg);
+	}
+	50% {
+		transform: rotateZ(180deg);
+	}
+	100% {
+		transform: rotateZ(360deg);
+	}
+}
