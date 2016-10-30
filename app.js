@@ -11,6 +11,8 @@ process.env.NODE_ENV = process.env.NODE_ENV || "development";
 process.env.PORT = process.env.PORT || 1314;
 var config = require('./config/config.js');
 
+
+
 /**
  * 判断是否存在日志配置文件夹，不存在则创建
  * 创建后加载日志模块
