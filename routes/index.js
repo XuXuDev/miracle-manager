@@ -10,7 +10,7 @@ var art = require('art-template/node/template.js');
 art.config('cache', false);
 var multer = require('multer')
 var upload = multer();
-
+var mkdirp = require('mkdirp');
 
 /**
  * 路由统一处理分发
@@ -58,12 +58,32 @@ router.get('/manager/:name', function(req, res) {
  * 
  */
 router.post("/uploadFile", upload.array('file', 12), function(req, res) {
-	logger.info(req.files);
+	if(!fs.existsSync("../uploads")) {
+		mkdirp.sync("../uploads");
+	}
+	logger.info("---正在上传文件---")
 	var data = {};
 	data.code = "000000";
 	data.msg = "success";
-	res.write(JSON.stringify(data));
-	res.end();
+	var len = req.files.length;
+	logger.info("---上传文件数量：" + len,"个---")
+	_.each(req.files, function(file) {
+		fs.writeFile("../uploads/" + file.originalname, file.buffer, function(err) {
+			len--;
+			if(err) {
+				logger.info("---",file.originalname,"上传失败---");
+				data.code = "000001";
+				data.msg = "fail";
+			} else {
+				logger.info("---",file.originalname,"上传完成---");
+			}
+			if(len === 0) {
+				logger.info("---全部文件上传完成---")
+				res.write(JSON.stringify(data));
+				res.end();
+			}
+		})
+	})
 });
 
 module.exports = router;
