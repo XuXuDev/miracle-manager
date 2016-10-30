@@ -22,7 +22,10 @@ _.each(['get', 'post'], function(type) {
 })
 
 router.get('/', function(req, res, next) {
-	res.write('200');
+	logger.info("进入主页面")
+	res.status(200);
+	var str = fs.readFileSync("./public/main/manager/tpl/index.html").toString();
+	res.write(str);
 	res.end();
 });
 
