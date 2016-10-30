@@ -5,14 +5,53 @@
 		<meta charset="utf-8">
 		<meta name="full-screen" content="yes">
 		<meta name="x5-fullscreen" content="true">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<meta name="format-detection" content="telephone=no, address=no">
 		<link href="/main/common/stylesheets/common.css" rel="stylesheet" />
 		<link href="/main/manager/stylesheets/index.css" rel="stylesheet" />
 	</head>
 
 	<body>
+		<h1>文件管理系统</h1>
+		<ul>
+			<li class="selected">
+				<a>上传</a>
+			</li>
+			<li class>
+				<a>文件</a>
+			</li>
+			<li>
+				<a>图片</a>
+			</li>
+			<li>
+				<a>音乐</a>
+			</li>
+			<li>
+				<a>视频</a>
+			</li>
+			<li>
+				<a>其它</a>
+			</li>
+		</ul>
+		<section id="upload">
+			<input type="file" value="选择文件" id="select" multiple/>
+			<input type="submit" value="上传" onclick="sendFile();" /><br />
+			<output id="result">
+				<h2>拖拽文件上传</h2>
+				<span id="resultDetail"></span>
+			</output>
+		</section>
+		<section id="files">
+			<ul>
+				<script type="text/html">
+					<li>
+						<input type="checkbox" />
+					</li>
+				</script>
+			</ul>
+		</section>
 	</body>
+	
+	<script src="/core/javascripts/zepto.min.js"></script>
 	<script src="/core/javascripts/template.js"></script>
 	<script src="/main/common/javascripts/common.js"></script>
 	<script src="/main/manager/javascripts/index.js"></script>
