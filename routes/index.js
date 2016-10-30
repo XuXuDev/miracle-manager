@@ -115,12 +115,10 @@ router.get("/fileList", function(req, res) {
 		var tempObj = fs.statSync("../uploads/" + _fileList[i]);
 		_fileObj.originalTime = new Date(tempObj.birthtime).getTime();
 		_fileObj.latestTime = new Date(tempObj.mtime).getTime();
-		_fileObj.size = tempObj.size > 1024 ? (tempObj.size / 1024).toFixed(2) + "Mb" : tempObj.size + "Kb";
-		data.list.push(_fileObj);
-	}
-	logger.info("---返回：" + JSON.stringify(data) + "---");
-	res.write(JSON.stringify(data));
-	res.end();
+		_fileObj.size = (tempObj.size / 1024) > 1024 ? (tempObj.size / 1024 / 1024).toFixed(2) + "Mb" : (tempObj.size / 1024).toFixed(2) + "Kb";
+	data.list.push(_fileObj);
+}
+logger.info("---返回：" + JSON.stringify(data) + "---"); res.write(JSON.stringify(data)); res.end();
 })
 
 module.exports = router;
