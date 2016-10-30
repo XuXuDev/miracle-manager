@@ -73,7 +73,7 @@ router.post("/uploadFile", upload.array('file', 12), function(req, res) {
 			if(err) {
 				logger.info("---",file.originalname,"上传失败---");
 				data.code = "000001";
-				data.msg = "fail";
+				data.msg = file.originalname + "upload fail";
 			} else {
 				logger.info("---",file.originalname,"上传完成---");
 			}
