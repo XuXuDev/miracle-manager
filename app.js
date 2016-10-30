@@ -72,9 +72,9 @@ function init() {
 	});
 	logger.info('添加捕获404异常模块成功');
 	logger.info('添加异常处理模块');
-	app.use(logErrors);
-	app.use(clientErrorHandler);
-	app.use(errorHandler);
+//	app.use(logErrors);
+//	app.use(clientErrorHandler);
+//	app.use(errorHandler);
 	logger.info('添加异常处理模块成功');
 
 	function logErrors(err, req, res, next) {
