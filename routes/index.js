@@ -41,16 +41,28 @@ router.get('/', function(req, res, next) {
 });
 
 /**
- * 静态文件管理路由
+ * 文件预览
  * 
  */
-router.get('/manager/:name', function(req, res) {
-	var name = req.params.name,
-		tplPath = './public/main/manager/manager_' + name + '.html';
-	logger.info('进入静态文件管理路由->页面名称:-----', 'manager_' + name, '-----');
-	var str = (fs.existsSync(tplPath) ? (fs.readFileSync(tplPath).toString()) : '');
-	res.write(str);
-	res.end();
+router.get('/own-oss-pre/:name', function(req, res) {
+	var name = req.params.name;
+	logger.info('进入静态文件请求：' + name);
+	fs.readFile('../uploads/' + name, function(err, data) {
+		if(err) throw err;
+		res.write(data);
+		res.end()
+	});
+});
+
+/**
+ * 文件下载
+ * 
+ */
+router.get('/own-oss-download/:name', function(req, res) {
+	var name = req.params.name;
+	logger.info('进入静态文件请求：' + name);
+	res.attachment('../uploads/' + name);
+	res.end()
 });
 
 /**
@@ -111,14 +123,16 @@ router.get("/fileList", function(req, res) {
 		}
 		var _fileObj = new Object();
 		_fileObj.name = _fileList[i];
-		_fileObj.link = "http://120.27.158.158:5666/" + _fileList[i];
+		_fileObj.link = "http://120.27.158.158:1314/own-oss/" + _fileList[i];
 		var tempObj = fs.statSync("../uploads/" + _fileList[i]);
 		_fileObj.originalTime = new Date(tempObj.birthtime).getTime();
 		_fileObj.latestTime = new Date(tempObj.mtime).getTime();
 		_fileObj.size = (tempObj.size / 1024) > 1024 ? (tempObj.size / 1024 / 1024).toFixed(2) + "Mb" : (tempObj.size / 1024).toFixed(2) + "Kb";
-	data.list.push(_fileObj);
-}
-logger.info("---返回：" + JSON.stringify(data) + "---"); res.write(JSON.stringify(data)); res.end();
+		data.list.push(_fileObj);
+	}
+	logger.info("---返回：" + JSON.stringify(data) + "---");
+	res.write(JSON.stringify(data));
+	res.end();
 })
 
 module.exports = router;
