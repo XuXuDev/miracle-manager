@@ -66,16 +66,17 @@ router.post("/uploadFile", upload.array('file', 12), function(req, res) {
 	data.code = "000000";
 	data.msg = "success";
 	var len = req.files.length;
-	logger.info("---上传文件数量：" + len,"个---")
+	logger.info("---上传文件数量：" + len, "个---")
 	_.each(req.files, function(file) {
 		fs.writeFile("../uploads/" + file.originalname, file.buffer, function(err) {
 			len--;
 			if(err) {
-				logger.info("---",file.originalname,"上传失败---");
+				data.msg = "";
+				logger.info("---", file.originalname, "上传失败---");
 				data.code = "000001";
-				data.msg = file.originalname + "upload fail";
+				data.msg += file.originalname + "upload fail;";
 			} else {
-				logger.info("---",file.originalname,"上传完成---");
+				logger.info("---", file.originalname, "上传完成---");
 			}
 			if(len === 0) {
 				logger.info("---全部文件上传完成---")
@@ -85,5 +86,39 @@ router.post("/uploadFile", upload.array('file', 12), function(req, res) {
 		})
 	})
 });
+
+/**
+ * 文件列表接口
+ * 
+ */
+router.get("/fileList", function(req, res) {
+	logger.info("---请求文件列表---")
+	logger.info("---pageNum：" + req.query.pageNum + "---");
+	logger.info("---pageSize：" + req.query.pageSize + "---");
+	var _pageNum = req.query.pageNum || 1;
+	var _pageSize = req.query.pageSize || 12;
+	var _start = (_pageNum - 1) * _pageSize;
+	var _end = _pageNum * _pageSize - 1;
+	var _fileList = fs.readdirSync("../uploads");
+	var data = {
+		code: "000000",
+		msg: "success",
+		list: []
+	};
+	for(var i = _start; i <= _end; i++) {
+		if(i >= _fileList.length) {
+			break;
+		}
+		var _fileObj = new Object();
+		_fileObj.name = _fileList[i];
+		_fileObj.link = "http://120.27.158.158:5666/" + _fileList[i];
+		var tempObj = fs.statSync("../uploads/" + _fileList[i]);
+		_fileObj.originalTime = new Date(tempObj.birthtime).getTime();
+		_fileObj.latestTime = new Date(tempObj.mtime).getTime();
+		_fileObj.size = (tempObj.size / 1024) > 1024 ? (tempObj.size / 1024 / 1024).toFixed(2) + "Mb" : (tempObj.size / 1024).toFixed(2) + "Kb";
+	data.list.push(_fileObj);
+}
+logger.info("---返回：" + JSON.stringify(data) + "---"); res.write(JSON.stringify(data)); res.end();
+})
 
 module.exports = router;
