@@ -60,6 +60,10 @@ router.get('/own-oss-pre/:name', function(req, res) {
 	logger.info('---', name, '文件预览开始---');
 	fs.readFile('../uploads/' + name, function(err, data) {
 		if(err) {
+			res.status(404);
+			var str = fs.readFileSync("./public/main/common/tpl/lost.html").toString();
+			res.write(str);
+			res.end();
 			logger.error('--- ', name, ' 文件预览读取出错：', name, "---");
 			logger.error('--- ', name, ' 错误信息---\n');
 			logger.error(err);
