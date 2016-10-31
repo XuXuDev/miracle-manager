@@ -32,28 +32,7 @@
 				<a>其它</a>
 			</li>
 		</ul>
-		<section id="upload">
-			<input type="file" value="选择文件" id="select" multiple/>
-			<input type="submit" value="上传" onclick="sendFile();" /><br />
-			<output id="result">
-				<h2>拖拽文件上传</h2>
-				<span id="resultDetail"></span>
-			</output>
-		</section>
-		<section id="files">
-			<script type="text/html" id="initList">
-				<ul>
-					{{each list as file i}}
-					<li>
-						<input type="checkbox" /><span>{{file.name}}</span><span>{{file.size}}</span><span>{{file.latestTime}}</span>
-						<a href={{file.link}}>下载</a>
-					</li>
-					{{/each}}
-				</ul>
-			</script>
-		</section>
 	</body>
-
 	<script src="/core/javascripts/zepto.min.js"></script>
 	<script src="/core/javascripts/template.js"></script>
 	<script src="/main/common/javascripts/common.js"></script>

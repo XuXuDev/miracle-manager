@@ -48,32 +48,3 @@ ul li.selected {
 	background-color: #5F9EA0;
 }
 
-section#upload {
-	position: absolute;
-	top: 45%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 6rem;
-	height: 4rem;
-	padding: .1rem;
-	border: solid 3px grey;
-	border-radius: .1rem;
-	background-color: rgba(255, 255, 255, .9);
-}
-
-section#upload input {
-	vertical-align: top;
-	font: normal .16rem "微软雅黑";
-}
-
-output {
-	position: absolute;
-	top: 45%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	font-size: .14rem;
-}
-
-output h2 {
-	font-size: .18rem;
-}
