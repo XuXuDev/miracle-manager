@@ -81,6 +81,10 @@ router.get('/own-oss-download/:name', function(req, res) {
 	logger.info('--- ', name, ' 文件下载开始---');
 	fs.access('../uploads/' + name, function(err, data) {
 		if(err) {
+			res.status(404);
+			var str = fs.readFileSync("./public/main/common/tpl/lost.html").toString();
+			res.write(str);
+			res.end();
 			logger.error('--- ', name, ' 文件下载出错：', name, "---");
 			logger.error('--- ', name, ' 错误信息---\n');
 			logger.error(err);

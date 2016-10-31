@@ -11,8 +11,6 @@ process.env.NODE_ENV = process.env.NODE_ENV || "development";
 process.env.PORT = process.env.PORT || 1314;
 var config = require('./config/config.js');
 
-
-
 /**
  * 判断是否存在日志配置文件夹，不存在则创建
  * 创建后加载日志模块
@@ -72,9 +70,9 @@ function init() {
 	});
 	logger.info('添加捕获404异常模块成功');
 	logger.info('添加异常处理模块');
-//	app.use(logErrors);
-//	app.use(clientErrorHandler);
-//	app.use(errorHandler);
+	app.use(logErrors);
+	app.use(clientErrorHandler);
+	app.use(errorHandler);
 	logger.info('添加异常处理模块成功');
 
 	function logErrors(err, req, res, next) {
@@ -97,14 +95,14 @@ function init() {
 		if(req.url.indexOf('.html') < 0 && req.url.indexOf('.') > -1) {
 			logger.error(req.url + '--文件不存在');
 			res.status(404);
-			res.end();
-		} else {
-			logger.info('开始将' + req.url + '重定向到主页面');
-			res.status(200);
-			var str = fs.readFileSync("./public/main/manager/tpl/index.html").toString();
+			var str = fs.readFileSync("./public/main/common/tpl/lost.html").toString();
 			res.write(str);
 			res.end();
-			logger.info(req.url + '重定向到主页面成功');
+		} else {
+			res.status(404);
+			var str = fs.readFileSync("./public/main/common/tpl/lost.html").toString();
+			res.write(str);
+			res.end();
 		}
 	}
 

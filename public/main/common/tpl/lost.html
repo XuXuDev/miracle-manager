@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="full-screen" content="yes">
+		<meta name="x5-fullscreen" content="true">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="format-detection" content="telephone=no, address=no">
+		<link href="/main/common/stylesheets/common.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				background-color: #bbeeea;
+				overflow: hidden;
+				position: relative;
+			}
+			
+			#content {
+				width: 100%;
+				font-size: 16px;
+				text-align: center;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
+			
+			#content img {
+				max-width: 220px;
+				width: 50%;
+				height: auto;
+			}
+			
+			#content p {
+				margin-top: 30px;
+				font-family: "微软雅黑";
+				font-size: 20px;
+				font-weight: bolder;
+				color: #1E1E1E;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="content">
+			<img src="/img/lost.png" />
+			<p>你访问的资源，居然找不到了!</p>
+		</div>
+	</body>
+	<script src="/core/javascripts/template.js"></script>
+	<script src="/main/common/javascripts/common.js"></script>
+
+</html>
