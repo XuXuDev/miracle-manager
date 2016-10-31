@@ -9,7 +9,7 @@ body {
 	-webkit-box-sizing: border-box;
 	margin: 0;
 	padding: .2rem;
-	background-image: url('../images/bg.png');
+	background-image: url('/main/manager/images/bg.png');
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -24,14 +24,14 @@ h1 {
 	text-align: center;
 }
 
-ul {
+#nav {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	width: 1rem;
 }
 
-ul li {
+#nav li {
 	font-size: .18rem;
 	line-height: .45rem;
 	letter-spacing: .05rem;
@@ -39,12 +39,20 @@ ul li {
 	border-radius: .05rem;
 }
 
-ul li:hover {
+#nav li:hover {
 	background-color: #ADD8E6;
 }
 
-ul li.selected {
+#nav li.selected {
 	color: #F8F8FF;
 	background-color: #5F9EA0;
 }
 
+#nav li.selected a {
+	color: #FFFFFF;
+}
+
+#nav li a {
+	color: #000000;
+	text-decoration: none;
+}

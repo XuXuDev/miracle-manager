@@ -1,19 +1,26 @@
 (function() {
-	document.getElementById('fileBtn').addEventListener('click', function() {
-		document.getElementById('upload').style.display = 'none';
-		renderList();
-	}, false);
-})()
-
-function renderList() {
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', 'fileList', true);
-	xhr.send(1, 5);
-	xhr.onload = function(e) {
-		var response = JSON.parse(this.response);
-		if(response.code === '000000') {
-			var html = template('initList', response);
-			document.getElementById('files').innerHTML = html;
-		}
-	}
-}
+	var renderList = function() {
+		wx.ajax('fileList', {
+			data: {
+				pageNum: 1,
+				pageSize: 5
+			},
+			dataType: 'json',
+			type: 'get',
+			timeout: 3000,
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			success: function(data) {
+				if(data.code === '000000') {
+					var html = template('initList', data);
+					document.getElementById('files').innerHTML = html;
+				}
+			},
+			error: function(xhr, type, errorThrown) {
+				console.log(type);
+			}
+		});
+	};
+	renderList();
+})();

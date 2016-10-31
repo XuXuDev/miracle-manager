@@ -11,6 +11,7 @@ art.config('cache', false);
 var multer = require('multer')
 var upload = multer();
 var mkdirp = require('mkdirp');
+var tools = require('../tools/tool.js');
 
 /**
  * 创建静态资源存放文件夹
@@ -44,10 +45,43 @@ _.each(['get', 'post'], function(type) {
  * 
  */
 router.get('/', function(req, res, next) {
-	logger.info("进入主页面")
+	logger.info("进入主页面");
 	res.status(200);
-	var str = fs.readFileSync("./public/main/manager/tpl/index.html").toString();
-	res.write(str);
+	var _headHtml = fs.readFileSync("./public/main/manager/tpl/head_pc.html").toString();
+	var _bodyHtml = fs.readFileSync("./public/main/manager/tpl/upload.html").toString();
+	var _footerHtml = fs.readFileSync("./public/main/manager/tpl/footer_pc.html").toString();
+	var _html = _headHtml + tools.getUrlScriptStr("/upload") + _bodyHtml + _footerHtml;
+	res.write(_html);
+	res.end();
+});
+
+/**
+ * 上传页面路由
+ * 
+ */
+router.get('/upload', function(req, res, next) {
+	logger.info("进入上传页面");
+	res.status(200);
+	var _headHtml = fs.readFileSync("./public/main/manager/tpl/head_pc.html").toString();
+	var _bodyHtml = fs.readFileSync("./public/main/manager/tpl/upload.html").toString();
+	var _footerHtml = fs.readFileSync("./public/main/manager/tpl/footer_pc.html").toString();
+	var _html = _headHtml + tools.getUrlScriptStr(req.path) + _bodyHtml + _footerHtml;
+	res.write(_html);
+	res.end();
+});
+
+/**
+ * 文件列表页面路由
+ * 
+ */
+router.get('/files', function(req, res, next) {
+	logger.info("进入文件列表页");
+	res.status(200);
+	var _headHtml = fs.readFileSync("./public/main/manager/tpl/head_pc.html").toString();
+	var _bodyHtml = fs.readFileSync("./public/main/manager/tpl/files.html").toString();
+	var _footerHtml = fs.readFileSync("./public/main/manager/tpl/footer_pc.html").toString();
+	var _html = _headHtml + tools.getUrlScriptStr(req.path) + _bodyHtml + _footerHtml;
+	res.write(_html);
 	res.end();
 });
 
