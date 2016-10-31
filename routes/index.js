@@ -50,7 +50,7 @@ router.get('/', function(req, res, next) {
 	var _headHtml = fs.readFileSync("./public/main/manager/tpl/head_pc.html").toString();
 	var _bodyHtml = fs.readFileSync("./public/main/manager/tpl/upload.html").toString();
 	var _footerHtml = fs.readFileSync("./public/main/manager/tpl/footer_pc.html").toString();
-	var _html = _headHtml + tools.getUrlScriptStr("/upload") + _bodyHtml + _footerHtml;
+	var _html = _headHtml + _bodyHtml + _footerHtml;
 	res.write(_html);
 	res.end();
 });
@@ -65,7 +65,7 @@ router.get('/upload', function(req, res, next) {
 	var _headHtml = fs.readFileSync("./public/main/manager/tpl/head_pc.html").toString();
 	var _bodyHtml = fs.readFileSync("./public/main/manager/tpl/upload.html").toString();
 	var _footerHtml = fs.readFileSync("./public/main/manager/tpl/footer_pc.html").toString();
-	var _html = _headHtml + tools.getUrlScriptStr(req.path) + _bodyHtml + _footerHtml;
+	var _html = _headHtml + _bodyHtml + _footerHtml;
 	res.write(_html);
 	res.end();
 });
@@ -80,7 +80,7 @@ router.get('/files', function(req, res, next) {
 	var _headHtml = fs.readFileSync("./public/main/manager/tpl/head_pc.html").toString();
 	var _bodyHtml = fs.readFileSync("./public/main/manager/tpl/files.html").toString();
 	var _footerHtml = fs.readFileSync("./public/main/manager/tpl/footer_pc.html").toString();
-	var _html = _headHtml + tools.getUrlScriptStr(req.path) + _bodyHtml + _footerHtml;
+	var _html = _headHtml + _bodyHtml + _footerHtml;
 	res.write(_html);
 	res.end();
 });
