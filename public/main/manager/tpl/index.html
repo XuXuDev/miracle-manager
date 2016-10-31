@@ -12,12 +12,12 @@
 
 	<body>
 		<h1>文件管理系统</h1>
-		<ul>
+		<ul id="nav">
 			<li class="selected">
-				<a>上传</a>
+				<a id="uploadBtn">上传</a>
 			</li>
-			<li class>
-				<a>文件</a>
+			<li>
+				<a id="fileBtn">文件</a>
 			</li>
 			<li>
 				<a>图片</a>
@@ -41,16 +41,19 @@
 			</output>
 		</section>
 		<section id="files">
-			<ul>
-				<script type="text/html">
+			<script type="text/html" id="initList">
+				<ul>
+					{{each list as file i}}
 					<li>
-						<input type="checkbox" />
+						<input type="checkbox" /><span>{{file.name}}</span><span>{{file.size}}</span><span>{{file.latestTime}}</span>
+						<a href={{file.link}}>下载</a>
 					</li>
-				</script>
-			</ul>
+					{{/each}}
+				</ul>
+			</script>
 		</section>
 	</body>
-	
+
 	<script src="/core/javascripts/zepto.min.js"></script>
 	<script src="/core/javascripts/template.js"></script>
 	<script src="/main/common/javascripts/common.js"></script>
