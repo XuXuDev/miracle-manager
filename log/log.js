@@ -4,8 +4,8 @@
  */
 var fs = require('fs');
 var log4js = require('log4js');
-var _levelConfig = process.env.NODE_ENV === "production" ? 'info' : 'debug'; //日志级别配置
-var _pathConfig = require('../config/config.js').LOGPATH; //日志文件存储路径配置
+var levelConfig = process.env.NODE_ENV === "production" ? 'info' : 'debug'; //日志级别配置
+var config = require('../config/config.js'); //日志文件存储路径配置
 var _ = require('underscore');
 
 /**
@@ -28,7 +28,7 @@ log4js.configure({
 		}, //控制台输出
 		{
 			type: "dateFile",
-			filename: _pathConfig + '/manager',
+			filename: config._logPath + config._logFilePre,
 			pattern: "_yyyy-MM-dd.log",
 			category: 'formal',
 			alwaysIncludePattern: true
@@ -59,7 +59,7 @@ exports.logger = logger;
  */
 exports.use = function(app) {
 	app.use(log4js.connectLogger(logger, {
-		level: _levelConfig,
+		level: levelConfig,
 		format: ':method :url'
 	}));
 }
@@ -77,7 +77,7 @@ rule.hour = 2;
 rule.minute = 0;
 var j = schedule.scheduleJob(rule, function() {
 	logger.info('执行日志文件定时删除任务');
-	var logFiles = fs.readdirSync(_pathConfig);
+	var logFiles = fs.readdirSync(config._logPath);
 	_.each(logFiles, function(logFile) {
 		if(logFile.indexOf('.') > -1) {
 			var filePattern = logFile.split('.')[1];
@@ -92,7 +92,7 @@ var j = schedule.scheduleJob(rule, function() {
 					logger.info(new Date());
 					logger.info(days);
 					if(days >= 4) {
-						fs.unlink(_pathConfig + '/' + logFile, function(msg) {
+						fs.unlink(config._logPath + '/' + logFile, function(msg) {
 							if(msg === null) {
 								logger.info('删除' + logDate + '的日志');
 							} else {

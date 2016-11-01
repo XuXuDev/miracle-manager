@@ -16,8 +16,8 @@ var config = require('./config/config.js');
  * 创建后加载日志模块
  *
  */
-if(!fs.existsSync(config.LOGPATH)) {
-	mkdirp.sync(config.LOGPATH);
+if(!fs.existsSync(config._logPath)) {
+	mkdirp.sync(config._logPath);
 	init();
 } else {
 	init();
@@ -72,7 +72,6 @@ function init() {
 	logger.info('添加异常处理模块');
 	app.use(logErrors);
 	app.use(clientErrorHandler);
-	app.use(errorHandler);
 	logger.info('添加异常处理模块成功');
 
 	function logErrors(err, req, res, next) {
@@ -83,24 +82,14 @@ function init() {
 	function clientErrorHandler(err, req, res, next) {
 		if(req.xhr) {
 			logger.error(req.url + '接口请求异常');
-			res.status(500).send({
-				error: '服务器异常！'
+			res.status(404).send({
+				code: config._responseCode._serverError,
+				msg: '接口不存在！'
 			});
 		} else {
-			next(err);
-		}
-	}
-
-	function errorHandler(err, req, res, next) {
-		if(req.url.indexOf('.html') < 0 && req.url.indexOf('.') > -1) {
-			logger.error(req.url + '--文件不存在');
 			res.status(404);
-			var str = fs.readFileSync("./public/main/common/tpl/lost.html").toString();
-			res.write(str);
-			res.end();
-		} else {
-			res.status(404);
-			var str = fs.readFileSync("./public/main/common/tpl/lost.html").toString();
+			logger.info("---进入404页面---");
+			var str = fs.readFileSync(config._route._notFound).toString();
 			res.write(str);
 			res.end();
 		}

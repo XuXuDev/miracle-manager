@@ -12,15 +12,16 @@ var multer = require('multer')
 var upload = multer();
 var mkdirp = require('mkdirp');
 var tools = require('../tools/tool.js');
+var config = require('../config/config.js');
 
 /**
  * 创建静态资源存放文件夹
  * 
  */
-if(!fs.existsSync("../uploads")) {
+if(!fs.existsSync(config._uploadPath)) {
 	logger.info("---静态资源存放文件夹不存在---");
 	logger.info("---正在创建静态资源存放文件夹---");
-	mkdirp.sync("../uploads");
+	mkdirp.sync(config._uploadPath);
 	logger.info("---创建静态资源存放文件夹成功---")
 }
 
@@ -38,50 +39,122 @@ _.each(['get', 'post'], function(type) {
 			next();
 		}
 	})
-})
-
-/**
- * 主页面路由
- * 
- */
-router.get('/', function(req, res, next) {
-	logger.info("进入主页面");
-	res.status(200);
-	var _headHtml = fs.readFileSync("./public/main/manager/tpl/head_pc.html").toString();
-	var _bodyHtml = fs.readFileSync("./public/main/manager/tpl/upload.html").toString();
-	var _footerHtml = fs.readFileSync("./public/main/manager/tpl/footer_pc.html").toString();
-	var _html = _headHtml + _bodyHtml + _footerHtml;
-	res.write(_html);
-	res.end();
 });
 
 /**
- * 上传页面路由
+ * 页面路由统一注册
  * 
  */
-router.get('/upload', function(req, res, next) {
-	logger.info("进入上传页面");
-	res.status(200);
-	var _headHtml = fs.readFileSync("./public/main/manager/tpl/head_pc.html").toString();
-	var _bodyHtml = fs.readFileSync("./public/main/manager/tpl/upload.html").toString();
-	var _footerHtml = fs.readFileSync("./public/main/manager/tpl/footer_pc.html").toString();
-	var _html = _headHtml + _bodyHtml + _footerHtml;
-	res.write(_html);
-	res.end();
+_.each(config._route._routeList, function(routeInfo) {
+	router.get(routeInfo._name, function(req, res, next) {
+		logger.info("---进入", routeInfo._descirption, "---");
+		res.status(200);
+		var _headHtml = fs.readFileSync(config._route._common._headPc).toString();
+		var _bodyHtml = fs.readFileSync(routeInfo._path).toString();
+		var _footerHtml = fs.readFileSync(config._route._common._footerPc).toString();
+		var _html = _headHtml + _bodyHtml + _footerHtml;
+		res.write(_html);
+		res.end();
+	});
 });
 
 /**
- * 文件列表页面路由
+ * 上传文件
  * 
  */
-router.get('/files', function(req, res, next) {
-	logger.info("进入文件列表页");
+router.post("/uploadFile", upload.array('file', 12), function(req, res) {
+	if(!fs.existsSync(config._uploadPath)) {
+		logger.info("---静态资源存放文件夹不存在---");
+		logger.info("---正在创建静态资源存放文件夹---");
+		mkdirp.sync(config._uploadPath);
+		logger.info("---创建静态资源存放文件夹成功---")
+	}
+	logger.info("---正在上传文件---");
+	var data = {};
+	data.code = config._responseCode._success;
+	data.msg = "success";
+	var len = req.files.length;
+	logger.info("---上传文件数量：" + len, "个---");
+	_.each(req.files, function(file) {
+		fs.writeFile(config._uploadPath + file.originalname, file.buffer, function(err) {
+			len--;
+			if(err) {
+				data.msg = "";
+				logger.info("---", file.originalname, "上传失败---");
+				data.code = config._responseCode._normalError;
+				data.msg += file.originalname + "upload fail;";
+			} else {
+				logger.info("---", file.originalname, "上传完成---");
+			}
+			if(len === 0) {
+				logger.info("---全部文件上传完成---");
+				res.status(200);
+				res.write(JSON.stringify(data));
+				res.end();
+			}
+		})
+	})
+});
+
+/**
+ * 文件列表接口
+ * 
+ */
+router.get("/fileList", function(req, res) {
+	if(!fs.existsSync(config._uploadPath)) {
+		logger.info("---静态资源存放文件夹不存在---");
+		logger.info("---正在创建静态资源存放文件夹---");
+		mkdirp.sync(config._uploadPath);
+		logger.info("---创建静态资源存放文件夹成功---")
+	}
+	logger.info("---请求文件列表---");
+	logger.info("---pageNum：" + req.query.pageNum + "---");
+	logger.info("---pageSize：" + req.query.pageSize + "---");
+	var pageNum = req.query.pageNum || 1;
+	var pageSize = req.query.pageSize || 12;
+	var start = (pageNum - 1) * pageSize;
+	var end = pageNum * pageSize - 1;
+	var fileList = [];
+	try {
+		fileList = fs.readdirSync(config._uploadPath);
+	} catch(e) {
+		logger.error('---获取静态文件列表 --> 读取静态资源文件夹失败---\n');
+		logger.error('---读取静态资源文件夹失败 错误信息开始---\n');
+		logger.error(e);
+		logger.error('\n---读取静态资源文件夹失败 错误信息结束---\n');
+	}
+	var data = {
+		code: config._responseCode._success,
+		msg: "success",
+		list: []
+	};
+	for(var i = start; i <= end; i++) {
+		if(i >= fileList.length) {
+			break;
+		}
+		var fileObj = new Object();
+		fileObj.name = fileList[i];
+		fileObj.preLink = config._preLink + fileList[i];
+		fileObj.downloadLink = config._downloadLink + fileList[i];
+		try {
+			var tempObj = fs.statSync(config._uploadPath + fileList[i]);
+			fileObj.originalTime = new Date(tempObj.birthtime).getTime();
+			fileObj.latestTime = new Date(tempObj.mtime).getTime();
+			fileObj.size = (tempObj.size / 1024) > 1024 ? (tempObj.size / 1024 / 1024).toFixed(2) + "Mb" : (tempObj.size / 1024).toFixed(2) + "Kb";
+		} catch(e) {
+			logger.error('---获取 ', fileList[i], ' 文件信息失败---\n');
+			logger.error('---获取 ', fileList[i], ' 文件信息失败 错误信息开始---\n');
+			logger.error(e);
+			logger.error('---获取 ', fileList[i], ' 文件信息失败 错误信息结束---\n');
+			fileObj.originalTime = "未知";
+			fileObj.latestTime = "未知";
+			fileObj.size = "未知";
+		}
+		data.list.push(fileObj);
+	}
+	logger.info("---返回：" + JSON.stringify(data) + "---");
 	res.status(200);
-	var _headHtml = fs.readFileSync("./public/main/manager/tpl/head_pc.html").toString();
-	var _bodyHtml = fs.readFileSync("./public/main/manager/tpl/files.html").toString();
-	var _footerHtml = fs.readFileSync("./public/main/manager/tpl/footer_pc.html").toString();
-	var _html = _headHtml + _bodyHtml + _footerHtml;
-	res.write(_html);
+	res.write(JSON.stringify(data));
 	res.end();
 });
 
@@ -92,10 +165,11 @@ router.get('/files', function(req, res, next) {
 router.get('/own-oss-pre/:name', function(req, res) {
 	var name = req.params.name;
 	logger.info('---', name, '文件预览开始---');
-	fs.readFile('../uploads/' + name, function(err, data) {
+	fs.readFile(config._uploadPath + name, function(err, data) {
 		if(err) {
 			res.status(404);
-			var str = fs.readFileSync("./public/main/common/tpl/lost.html").toString();
+			logger.info("---进入404页面---");
+			var str = fs.readFileSync(config._route._notFound).toString();
 			res.write(str);
 			res.end();
 			logger.error('--- ', name, ' 文件预览读取出错：', name, "---");
@@ -103,6 +177,7 @@ router.get('/own-oss-pre/:name', function(req, res) {
 			logger.error(err);
 			logger.error('--- ', name, ' 错误信息结束---\n');
 		} else {
+			res.status(200);
 			res.write(data);
 			res.end()
 			logger.info('---', name, '文件预览成功返回---');
@@ -117,10 +192,11 @@ router.get('/own-oss-pre/:name', function(req, res) {
 router.get('/own-oss-download/:name', function(req, res) {
 	var name = req.params.name;
 	logger.info('--- ', name, ' 文件下载开始---');
-	fs.access('../uploads/' + name, function(err, data) {
+	fs.access(config._uploadPath + name, function(err, data) {
 		if(err) {
 			res.status(404);
-			var str = fs.readFileSync("./public/main/common/tpl/lost.html").toString();
+			logger.info("---进入404页面---");
+			var str = fs.readFileSync(config._route._notFound).toString();
 			res.write(str);
 			res.end();
 			logger.error('--- ', name, ' 文件下载出错：', name, "---");
@@ -128,106 +204,12 @@ router.get('/own-oss-download/:name', function(req, res) {
 			logger.error(err);
 			logger.error('--- ', name, ' 错误信息结束---\n');
 		} else {
-			res.attachment('../uploads/' + name);
+			res.status(200);
+			res.attachment(config._uploadPath + name);
 			res.end()
 			logger.info('--- ', name, ' 文件下载成功返回---');
 		}
 	});
 });
-
-/**
- * 上传文件
- * 
- */
-router.post("/uploadFile", upload.array('file', 12), function(req, res) {
-	if(!fs.existsSync("../uploads")) {
-		logger.info("---静态资源存放文件夹不存在---");
-		logger.info("---正在创建静态资源存放文件夹---");
-		mkdirp.sync("../uploads");
-		logger.info("---创建静态资源存放文件夹成功---")
-	}
-	logger.info("---正在上传文件---");
-	var data = {};
-	data.code = "000000";
-	data.msg = "success";
-	var len = req.files.length;
-	logger.info("---上传文件数量：" + len, "个---");
-	_.each(req.files, function(file) {
-		fs.writeFile("../uploads/" + file.originalname, file.buffer, function(err) {
-			len--;
-			if(err) {
-				data.msg = "";
-				logger.info("---", file.originalname, "上传失败---");
-				data.code = "000001";
-				data.msg += file.originalname + "upload fail;";
-			} else {
-				logger.info("---", file.originalname, "上传完成---");
-			}
-			if(len === 0) {
-				logger.info("---全部文件上传完成---");
-				res.write(JSON.stringify(data));
-				res.end();
-			}
-		})
-	})
-});
-
-/**
- * 文件列表接口
- * 
- */
-router.get("/fileList", function(req, res) {
-	if(!fs.existsSync("../uploads")) {
-		logger.info("---静态资源存放文件夹不存在---");
-		logger.info("---正在创建静态资源存放文件夹---");
-		mkdirp.sync("../uploads");
-		logger.info("---创建静态资源存放文件夹成功---")
-	}
-	logger.info("---请求文件列表---");
-	logger.info("---pageNum：" + req.query.pageNum + "---");
-	logger.info("---pageSize：" + req.query.pageSize + "---");
-	var _pageNum = req.query.pageNum || 1;
-	var _pageSize = req.query.pageSize || 12;
-	var _start = (_pageNum - 1) * _pageSize;
-	var _end = _pageNum * _pageSize - 1;
-	var _fileList = [];
-	try {
-		_fileList = fs.readdirSync("../uploads");
-	} catch(e) {
-		logger.error('---获取静态文件列表 --> 读取静态资源文件夹失败---\n');
-		logger.error('---读取静态资源文件夹失败 错误信息开始---\n');
-		logger.error(e);
-		logger.error('\n---读取静态资源文件夹失败 错误信息结束---\n');
-	}
-	var data = {
-		code: "000000",
-		msg: "success",
-		list: []
-	};
-	for(var i = _start; i <= _end; i++) {
-		if(i >= _fileList.length) {
-			break;
-		}
-		var _fileObj = new Object();
-		_fileObj.name = _fileList[i];
-		_fileObj.preLink = "http://120.27.158.158:1314/own-oss-pre/" + _fileList[i];
-		_fileObj.downloadLink = "http://120.27.158.158:1314/own-oss-download/" + _fileList[i];
-		try {
-			var tempObj = fs.statSync("../uploads/" + _fileList[i]);
-			_fileObj.originalTime = new Date(tempObj.birthtime).getTime();
-			_fileObj.latestTime = new Date(tempObj.mtime).getTime();
-			_fileObj.size = (tempObj.size / 1024) > 1024 ? (tempObj.size / 1024 / 1024).toFixed(2) + "Mb" : (tempObj.size / 1024).toFixed(2) + "Kb";
-		} catch(e) {
-			logger.error('---获取 ', _fileList[i], ' 文件信息失败---\n');
-			logger.error('---获取 ', _fileList[i], ' 文件信息失败 错误信息开始---\n');
-			logger.error(e);
-			logger.error('---获取 ', _fileList[i], ' 文件信息失败 错误信息结束---\n');
-		}
-		data.list.push(_fileObj);
-	}
-	logger.info("---返回：" + JSON.stringify(data) + "---");
-	res.write(JSON.stringify(data));
-	res.end();
-})
 
 module.exports = router;

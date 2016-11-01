@@ -1,10 +1,10 @@
 'use strict';
-var _result = {};
+var tool = {};
 
-_result = {
-	getUrlScriptStr: function(url){
+tool = {
+	_getUrlScriptStr: function(url) {
 		return "<script> var currentRouter = '" + url + "';</script>"
 	}
 }
 
-module.exports = _result;
+module.exports = tool;
