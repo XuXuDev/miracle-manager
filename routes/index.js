@@ -21,8 +21,13 @@ var config = require('../config/config.js');
 if(!fs.existsSync(config._uploadPath)) {
 	logger.info("---静态资源存放文件夹不存在---");
 	logger.info("---正在创建静态资源存放文件夹---");
-	mkdirp.sync(config._uploadPath);
-	logger.info("---创建静态资源存放文件夹成功---")
+	try {
+		mkdirp.sync(config._uploadPath);
+		logger.info("---创建静态资源存放文件夹成功---");
+	} catch(e) {
+		logger.info("---创建静态资源存放文件夹失败---\n", "---创建静态资源存放文件夹失败信息---\n", e, "\n---创建静态资源存放文件夹失败信息结束---");
+	}
+
 }
 
 /**
@@ -38,7 +43,7 @@ _.each(['get', 'post'], function(type) {
 			logger.info('路由请求：' + req.url);
 			next();
 		}
-	})
+	});
 });
 
 /**
@@ -49,11 +54,11 @@ _.each(config._route._routeList, function(routeInfo) {
 	router.get(routeInfo._name, function(req, res, next) {
 		logger.info("---进入", routeInfo._descirption, "---");
 		res.status(200);
-		var _headHtml = fs.readFileSync(config._route._common._headPc).toString();
-		var _bodyHtml = fs.readFileSync(routeInfo._path).toString();
-		var _footerHtml = fs.readFileSync(config._route._common._footerPc).toString();
-		var _html = _headHtml + _bodyHtml + _footerHtml;
-		res.write(_html);
+		var headHtml = fs.readFileSync(config._route._common._headPc).toString();
+		var bodyHtml = fs.readFileSync(routeInfo._path).toString();
+		var footerHtml = fs.readFileSync(config._route._common._footerPc).toString();
+		var html = headHtml + bodyHtml + footerHtml;
+		res.write(html);
 		res.end();
 	});
 });
@@ -74,6 +79,7 @@ router.post("/uploadFile", upload.array('file', 12), function(req, res) {
 	data.code = config._responseCode._success;
 	data.msg = "success";
 	var len = req.files.length;
+	logger.info(req.files)
 	logger.info("---上传文件数量：" + len, "个---");
 	_.each(req.files, function(file) {
 		fs.writeFile(config._uploadPath + file.originalname, file.buffer, function(err) {
@@ -112,6 +118,8 @@ router.get("/fileList", function(req, res) {
 	logger.info("---pageSize：" + req.query.pageSize + "---");
 	var pageNum = req.query.pageNum || 1;
 	var pageSize = req.query.pageSize || 12;
+	pageNum >= 0 ? pageNum : 1;
+	pageSize >= 0 ? pageSize : 12;
 	var start = (pageNum - 1) * pageSize;
 	var end = pageNum * pageSize - 1;
 	var fileList = [];
@@ -172,7 +180,7 @@ router.get('/own-oss-pre/:name', function(req, res) {
 			var str = fs.readFileSync(config._route._notFound).toString();
 			res.write(str);
 			res.end();
-			logger.error('--- ', name, ' 文件预览读取出错：', name, "---");
+			logger.error('--- ', name, ' 文件预览读取出错', "---");
 			logger.error('--- ', name, ' 错误信息---\n');
 			logger.error(err);
 			logger.error('--- ', name, ' 错误信息结束---\n');
